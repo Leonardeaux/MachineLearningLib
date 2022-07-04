@@ -1,3 +1,3 @@
-C:/Users/enzol/CLionProjects/DLL/cmake-build-debug/CMakeFiles/DLL.dir
-C:/Users/enzol/CLionProjects/DLL/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/enzol/CLionProjects/DLL/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/enzol/Documents/MachineLearningLib/DLL/cmake-build-debug/CMakeFiles/DLL.dir
+C:/Users/enzol/Documents/MachineLearningLib/DLL/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/enzol/Documents/MachineLearningLib/DLL/cmake-build-debug/CMakeFiles/rebuild_cache.dir

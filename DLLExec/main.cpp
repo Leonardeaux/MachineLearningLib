@@ -123,6 +123,17 @@ int main() {
     KMeans kMeans(2, iters);
     kMeans.run(all_points);
 
+    std::cout << "Clusters : " << std::endl;
+
+    std::vector<Cluster> all_clusters = kMeans.getClusters();
+
+    for (auto it = all_clusters.begin() ; it != all_clusters.end(); ++it){
+        for(int i = 0; i < 2; i++){
+            std::cout << ' ' << it->getCentroidByPos(i);
+        }
+        std::cout << '\n';
+    }
+
 //    kMeansClustering2(X2, 190, 3);
 //    std::cout << "\n" << kMeansClustering(X2, 190, 3) << "\n" << std::endl;
 

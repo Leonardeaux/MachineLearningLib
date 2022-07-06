@@ -68,6 +68,22 @@ class MLLib:
                                  is_classification,
                                  nb_iter)
 
+    def kmeans_centroids(self, all_inputs: np.ndarray, k: int, nb_iters: int = 100):
+        nd_pointer_2 = np.ctypeslib.ndpointer(dtype=np.float64,
+                                              ndim=2,
+                                              flags="C")
+        self.dll.kmeans_centroids.argtypes = [nd_pointer_2,
+                                              ctypes.c_int32,
+                                              ctypes.c_int32,
+                                              ctypes.c_int32,
+                                              ctypes.c_int32]
+
+        self.dll.predict_mlp_model.restype = ctypes.POINTER(ctypes.c_double)
+        all_inputs = all_inputs.reshape((all_inputs.shape[0], all_inputs.shape[1]), order="C")
+
+        native_result = self.dll.kmeans_centroids(all_inputs, all_inputs.shape[0], all_inputs.shape[1], k, nb_iters)
+        return np.ctypeslib.as_array(native_result, (2, 2))
+
     def test_print_array(self):
         ND_POINTER_1 = np.ctypeslib.ndpointer(dtype=np.float64,
                                               ndim=1,

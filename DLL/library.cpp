@@ -8,6 +8,7 @@
 
 extern "C" {
 
+    // Perceptron
 DLLEXPORT Perceptron *create_mlp_model(int32_t *npl, int32_t npl_size) {
     std::cout << "Beginning create_mlp_model" << std::endl;
 
@@ -70,6 +71,47 @@ DLLEXPORT void train_mlp_model(Perceptron *model,
     inputs.resize(0,0);
     outputs.resize(0,0);
 }
+
+    // RBF
+DLLEXPORT double **kmeans_centroids(double *inputs, size_t inputs_rows, size_t inputs_cols, int32_t k, int32_t nb_iters) {
+    Eigen::MatrixXd all_inputs(inputs_rows, inputs_cols);
+
+    int cpt = 0;
+    for (size_t i = 0; i < inputs_rows; i++) {
+        for (size_t j = 0; j < inputs_cols; j++) {
+            all_inputs((int)i, (int)j) = inputs[cpt];
+            cpt++;
+        }
+    }
+
+    std::vector<Point> all_points;
+    for(int i = 0; i < all_inputs.rows(); i++){
+        Point point(i + 1, all_inputs.row(i));
+        all_points.push_back(point);
+    }
+
+    all_inputs.resize(0, 0);
+
+    KMeans kMeans(k, nb_iters);
+    kMeans.run(all_points);
+
+    std::vector<Cluster> all_clusters = kMeans.getClusters();
+
+    int rows = all_clusters.size();
+    int cols = all_clusters[0].getSize();
+    auto** result_array = new double* [rows];
+
+    for(int i = 0; i < rows; i++){
+        result_array[i] = new double[cols];
+        for(int j = 0; j < cols; j++){
+            result_array[i][j] = all_clusters[i].getCentroidByPos(j);
+        }
+    }
+
+    all_clusters = std::vector<Cluster>(); //Destroy vector
+    return result_array;
+}
+
 
 DLLEXPORT void print_array(double *v, size_t n) {
     for (size_t i = 0; i < n; i++) {

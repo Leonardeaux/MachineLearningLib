@@ -7,6 +7,6 @@ set(EIGEN_DIR "C:/Users/enzol/Documents/Library/eigen-3.4.0")
 
 include_directories(${EIGEN_DIR})
 
-add_executable(DLLExec main.cpp Perceptron.cpp Perceptron.h Point.cpp Point.h Cluster.cpp Cluster.h KMeans.cpp KMeans.h)
+add_executable(DLLExec main.cpp Perceptron.cpp Perceptron.h Point.cpp Point.h Cluster.cpp Cluster.h KMeans.cpp KMeans.h Linear.cpp Linear.h)
 
 target_link_libraries (DLLExec)

@@ -19,6 +19,10 @@ DLLEXPORT Perceptron *create_mlp_model(int32_t *npl, int32_t npl_size) {
     return model;
 }
 
+DLLEXPORT int32_t get_predict_size(Perceptron *model) {
+    return model->size_predict_result;
+}
+
 DLLEXPORT double *predict_mlp_model(Perceptron *model, double *inputs, size_t inputs_size, int32_t is_classification) {
     Eigen::VectorXd sample_inputs(inputs_size);
     for(size_t i = 0; i < inputs_size; i++){
@@ -39,17 +43,17 @@ DLLEXPORT double *predict_mlp_model(Perceptron *model, double *inputs, size_t in
 }
 
 DLLEXPORT void train_mlp_model(Perceptron *model,
-                               double *all_inputs,
+                               const double *all_inputs,
                                size_t inputs_size_rows,
                                size_t inputs_size_cols,
-                               double *all_outputs,
+                               const double *all_outputs,
                                size_t outputs_size_rows,
                                size_t outputs_size_cols,
                                float learning_rate,
                                int32_t is_classification,
                                int32_t nb_iter) {
     Eigen::MatrixXd inputs(inputs_size_rows, inputs_size_cols);
-    Eigen::MatrixXd outputs(inputs_size_rows, inputs_size_cols);
+    Eigen::MatrixXd outputs(outputs_size_rows, outputs_size_cols);
     int cpt = 0;
     for (size_t i = 0; i < inputs_size_rows; i++) {
         for (size_t j = 0; j < inputs_size_cols; j++) {
@@ -73,7 +77,7 @@ DLLEXPORT void train_mlp_model(Perceptron *model,
 }
 
     // RBF
-DLLEXPORT double **kmeans_centroids(double *inputs, size_t inputs_rows, size_t inputs_cols, int32_t k, int32_t nb_iters) {
+DLLEXPORT double *kmeans_centroids(double *inputs, size_t inputs_rows, size_t inputs_cols, int32_t k, int32_t nb_iters) {
     Eigen::MatrixXd all_inputs(inputs_rows, inputs_cols);
 
     int cpt = 0;
@@ -98,8 +102,8 @@ DLLEXPORT double **kmeans_centroids(double *inputs, size_t inputs_rows, size_t i
     std::vector<Cluster> all_clusters = kMeans.getClusters();
 
     int rows = all_clusters.size();
-    int cols = all_clusters[0].getSize();
-    auto** result_array = new double* [rows];
+    int cols = all_clusters[0].getPoint(0).getDimensions();
+/*    auto** result_array = new double* [rows];
 
     for(int i = 0; i < rows; i++){
         result_array[i] = new double[cols];
@@ -109,6 +113,17 @@ DLLEXPORT double **kmeans_centroids(double *inputs, size_t inputs_rows, size_t i
     }
 
     all_clusters = std::vector<Cluster>(); //Destroy vector
+    return result_array;*/
+    cpt = 0;
+    auto result_array = new double[rows * cols];
+    for(int i = 0; i < rows; i++){
+       for(int j = 0; j < cols; j++){
+           result_array[cpt] = all_clusters[i].getCentroidByPos(j);
+           std::cout << result_array[cpt] << std::endl;
+           cpt++;
+       }
+    }
+
     return result_array;
 }
 

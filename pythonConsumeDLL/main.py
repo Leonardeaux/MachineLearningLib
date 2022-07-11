@@ -1,6 +1,9 @@
 import MLLib
 import ctypes
 import numpy as np
+import sys
+
+np.set_printoptions(threshold=sys.maxsize)
 
 if __name__ == '__main__':
     my_lib = MLLib.MLLib(ctypes.CDLL(
@@ -59,6 +62,15 @@ if __name__ == '__main__':
         [6, 10]
     ])
 
+    X3 = np.random.random((500, 2)) * 2.0 - 1.0
+    Y3 = np.array([[1, 0, 0] if -p[0] - p[1] - 0.5 > 0 and p[1] < 0 and p[0] - p[1] - 0.5 < 0 else
+                  [0, 1, 0] if -p[0] - p[1] - 0.5 < 0 and p[1] > 0 and p[0] - p[1] - 0.5 < 0 else
+                  [0, 0, 1] if -p[0] - p[1] - 0.5 < 0 and p[1] < 0 and p[0] - p[1] - 0.5 > 0 else
+                  [0, 0, 0] for p in X3])
+
+    X3 = X3[[not np.all(arr == [0, 0, 0]) for arr in Y3]]
+    Y3 = Y3[[not np.all(arr == [0, 0, 0]) for arr in Y3]]
+    Y3 = Y3.astype(np.float64)
     # model = my_lib.create_mlp([2, 3, 1])
     # print("Before : ")
     # for sample_input in X:
@@ -70,6 +82,8 @@ if __name__ == '__main__':
     #
     # for sample_input in X:
     #     print(my_lib.predict_mlp(model, sample_input))
+
+
     #
     # print("For Regression : ")
     #
@@ -85,4 +99,18 @@ if __name__ == '__main__':
     # for sample_input in X2:
     #     print(my_lib.predict_mlp(model2, sample_input, False))
 
-    print(my_lib.kmeans_centroids(data2, 2, ))
+    nb_iter = 100000
+    model = my_lib.create_mlp([2, 3])
+    print("Before : ")
+    for sample_input in X3:
+        print(my_lib.predict_mlp(model, sample_input))
+
+    my_lib.train_mlp(model, X3, Y3, 0.01, True, nb_iter)
+
+    print("After : ")
+
+    for sample_input in X3:
+        print(my_lib.predict_mlp(model, sample_input))
+
+
+    # print(my_lib.kmeans_centroids(data2, 2, ))

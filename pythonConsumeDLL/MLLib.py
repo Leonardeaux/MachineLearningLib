@@ -15,14 +15,16 @@ class MLLib:
 
         return self.dll.create_mlp_model(arr_type_npl(*npl), len(npl))
 
-    def test_mlp(self, model: ctypes.c_void_p):
-        self.dll.test_mlp_model.argtypes = [ctypes.c_void_p]
-        self.dll.test_mlp_model.restype = ctypes.c_int32
+    def get_size(self, model: ctypes.c_void_p) -> ctypes.c_int32:
+        self.dll.get_predict_size.argtypes = [ctypes.c_void_p]
+        self.dll.get_predict_size.restype = ctypes.c_int32
 
-        return self.dll.test_mlp_model(model)
+        size = self.dll.get_predict_size(model)
+        return size
 
     def predict_mlp(self, model: ctypes.c_void_p, inputs: np.ndarray, is_classification: bool = True)\
             -> ctypes.POINTER(ctypes.c_double):
+        predict_size = self.get_size(model)
         nd_pointer_1 = np.ctypeslib.ndpointer(dtype=np.float64,
                                               ndim=1,
                                               flags="C")
@@ -31,7 +33,8 @@ class MLLib:
         self.dll.predict_mlp_model.restype = ctypes.POINTER(ctypes.c_double)
 
         native_result = self.dll.predict_mlp_model(model, inputs, inputs.size, is_classification)
-        return np.ctypeslib.as_array(native_result, (1,))
+
+        return np.ctypeslib.as_array(native_result, shape=(predict_size, ))
 
     def train_mlp(self,
                   model: ctypes.c_void_p,
@@ -68,7 +71,7 @@ class MLLib:
                                  is_classification,
                                  nb_iter)
 
-    def kmeans_centroids(self, all_inputs: np.ndarray, k: int, nb_iters: int = 100):
+    def kmeans_centroids(self, all_inputs: np.ndarray, k: int, nb_iters: int = 100) -> ctypes.POINTER(ctypes.c_double):
         nd_pointer_2 = np.ctypeslib.ndpointer(dtype=np.float64,
                                               ndim=2,
                                               flags="C")
@@ -78,11 +81,11 @@ class MLLib:
                                               ctypes.c_int32,
                                               ctypes.c_int32]
 
-        self.dll.predict_mlp_model.restype = ctypes.POINTER(ctypes.c_double)
+        self.dll.kmeans_centroids.restype = ctypes.POINTER(ctypes.c_double)
         all_inputs = all_inputs.reshape((all_inputs.shape[0], all_inputs.shape[1]), order="C")
 
         native_result = self.dll.kmeans_centroids(all_inputs, all_inputs.shape[0], all_inputs.shape[1], k, nb_iters)
-        return np.ctypeslib.as_array(native_result, (2, 2))
+        return np.ctypeslib.as_array(native_result, (all_inputs.shape[1], 2))
 
     def test_print_array(self):
         ND_POINTER_1 = np.ctypeslib.ndpointer(dtype=np.float64,
